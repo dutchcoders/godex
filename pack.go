@@ -10,6 +10,7 @@ import (
 var (
 	Uleb128Pack = RegisterPack("uleb128", PackFunc(unpackUleb128))
 	UintPack    = RegisterPack("uint", PackFunc(unpackUint))
+	UbytePack   = RegisterPack("ubyte", PackFunc(unpackUbyte))
 	UshortPack  = RegisterPack("ushort", PackFunc(unpackUshort))
 	BytePack    = RegisterPack("byte", PackFunc(unpackByteArray))
 )
@@ -49,6 +50,11 @@ func unpackUleb128(data []byte, val reflect.Value) (uint, error) {
 func unpackUint(data []byte, val reflect.Value) (uint, error) {
 	val.SetUint(uint64(binary.LittleEndian.Uint32(data[0:4])))
 	return uint(4), nil
+}
+
+func unpackUbyte(data []byte, val reflect.Value) (uint, error) {
+	val.SetUint(uint64(data[0]))
+	return uint(1), nil
 }
 
 func unpackUshort(data []byte, val reflect.Value) (uint, error) {

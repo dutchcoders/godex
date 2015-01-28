@@ -43,7 +43,7 @@ func TestUleb(t *testing.T) {
 }
 
 func TestXxx(t *testing.T) {
-	dex, err := Open("")
+	dex, err := Open("malware.dex")
 
 	if err != nil {
 		t.Errorf("%s", err)
