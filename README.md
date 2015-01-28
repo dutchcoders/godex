@@ -14,6 +14,7 @@ dex.Dump()
 
 ## References
 - https://source.android.com/devices/tech/dalvik/dex-format.html
+- https://android.googlesource.com/platform/dalvik2/+/master
 
 ## Contributions
 
