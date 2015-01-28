@@ -81,7 +81,7 @@ type Header struct {
 	FieldsOffset    uint32   `pack:"uint"`
 	MethodIdsSize   uint32   `pack:"uint"`
 	MethodIdsOffset uint32   `pack:"uint"`
-	ClassDeffsSize  uint32   `pack:"uint"`
+	ClassDefsSize   uint32   `pack:"uint"`
 	ClassDefsOffset uint32   `pack:"uint"`
 	DataSize        uint32   `pack:"uint"`
 	DataOffset      uint32   `pack:"uint"`
@@ -217,7 +217,10 @@ func (d *DEX) readFields() error {
 	for i := 0; i < int(d.header.FieldsSize); i++ {
 		s := uint32(d.header.FieldsOffset) + uint32(0x8*i)
 		field_id_item := FieldIdItem{dex: d}
-		Unpack(d.b[s:], &field_id_item)
+		if _, err := Unpack(d.b[s:], &field_id_item); err != nil {
+			return err
+		}
+
 		d.Fields[i] = field_id_item
 	}
 	return nil
@@ -228,7 +231,10 @@ func (d *DEX) readMethods() error {
 	for i := 0; i < int(d.header.MethodIdsSize); i++ {
 		s := uint32(d.header.MethodIdsOffset) + uint32(0x8*i)
 		method_id_item := MethodIdItem{dex: d}
-		Unpack(d.b[s:], &method_id_item)
+		if _, err := Unpack(d.b[s:], &method_id_item); err != nil {
+			return err
+		}
+
 		d.Methods[i] = method_id_item
 	}
 	return nil
@@ -247,7 +253,10 @@ func (d *DEX) readTypes() error {
 	d.Types = make([]TypeId, d.header.TypeIdsSize)
 	for i := 0; i < int(d.header.TypeIdsSize); i++ {
 		typeid := TypeId{dex: d}
-		Unpack(d.b[d.header.TypeIdsOffset+uint32(4*i):], &typeid)
+		if _, err := Unpack(d.b[d.header.TypeIdsOffset+uint32(4*i):], &typeid); err != nil {
+			return err
+		}
+
 		d.Types[i] = typeid
 	}
 	return nil
@@ -272,8 +281,9 @@ func (d *DEX) readPrototypes() error {
 	for i := 0; i < int(d.header.ProtosSize); i++ {
 		s := uint32(d.header.ProtosOffset) + uint32(0xc*i)
 		proto_id_item := ProtoIdItem{dex: d}
-		Unpack(d.b[s:], &proto_id_item)
-		fmt.Println(proto_id_item)
+		if _, err := Unpack(d.b[s:], &proto_id_item); err != nil {
+			return err
+		}
 		d.Prototypes[i] = proto_id_item
 	}
 	return nil
@@ -340,8 +350,8 @@ func (dex *DEX) Parse() error {
 
 	_ = err
 
-	dex.Classes = make([]ClassDefItem, header.ClassDeffsSize)
-	for i := 0; i < int(header.ClassDeffsSize); i++ {
+	dex.Classes = make([]ClassDefItem, header.ClassDefsSize)
+	for i := 0; i < int(header.ClassDefsSize); i++ {
 		s := uint32(header.ClassDefsOffset) + uint32(32*i)
 
 		class_def_item := ClassDefItem{dex: dex}
